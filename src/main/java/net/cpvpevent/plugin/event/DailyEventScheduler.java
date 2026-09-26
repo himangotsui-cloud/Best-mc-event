@@ -3,7 +3,6 @@ package net.cpvpevent.plugin.event;
 import net.cpvpevent.plugin.CPVPEventPlus;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -80,7 +79,9 @@ public class DailyEventScheduler {
         }
     }
 
-    private void runDailyEvent(Map<?, ?> entry) {
+    @SuppressWarnings("unchecked")
+    private void runDailyEvent(Map<?, ?> raw) {
+        Map<String, Object> entry = (Map<String, Object>) raw;
         boolean announce = Boolean.parseBoolean(String.valueOf(entry.getOrDefault("announce", true)));
         EventMode mode = EventMode.fromString(String.valueOf(entry.getOrDefault("mode", "AUTOMATIC")));
         int announceDelay = plugin.configManager().config().getInt("daily-events.announce-delay-seconds", 300);
