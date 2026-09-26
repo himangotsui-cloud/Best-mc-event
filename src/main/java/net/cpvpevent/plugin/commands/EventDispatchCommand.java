@@ -63,11 +63,25 @@ public class EventDispatchCommand implements CommandExecutor, TabCompleter {
             }
             case "arena" -> {
                 if (!requireAdmin(sender)) return true;
-                if (rest.length < 1) { usage(sender, "/event arena <material>"); return true; }
-                Material material = Material.matchMaterial(rest[0].toUpperCase());
-                if (material == null) { sender.sendMessage(Text.color("&cUnknown material.")); return true; }
-                plugin.eventManager().setArenaMaterial(material);
-                sender.sendMessage(Text.color("&aArena floor set to " + material.name() + "."));
+                if (rest.length < 1) { usage(sender, "/event arena <material[,material2,...]|random> [size]"); return true; }
+
+                List<Material> materials = new ArrayList<>();
+                if (rest[0].equalsIgnoreCase("random")) {
+                    materials.addAll(List.of(Material.GRASS_BLOCK, Material.SAND, Material.DIRT, Material.SNOW_BLOCK, Material.MYCELIUM, Material.RED_SAND, Material.PODZOL));
+                } else {
+                    for (String part : rest[0].split(",")) {
+                        Material m = Material.matchMaterial(part.trim().toUpperCase());
+                        if (m != null) materials.add(m);
+                    }
+                }
+                if (materials.isEmpty()) { sender.sendMessage(Text.color("&cNo valid materials given.")); return true; }
+
+                int size = 100;
+                if (rest.length >= 2) {
+                    try { size = Integer.parseInt(rest[1]); } catch (NumberFormatException ignored) { }
+                }
+                sender.sendMessage(Text.color("&eBuilding arena, this may take a moment..."));
+                plugin.eventManager().buildArena(materials, size, sender);
             }
             case "border" -> {
                 if (!requireAdmin(sender)) return true;
@@ -287,7 +301,7 @@ public class EventDispatchCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 2) {
             return switch (args[0].toLowerCase()) {
-                case "arena" -> List.of("grass_block", "sand", "dirt", "snow_block", "mycelium");
+                case "arena" -> List.of("random", "grass_block,sand", "sand,dirt,snow_block");
                 case "drop" -> List.of("deepslate", "bedrock");
                 case "pvp", "protection", "rekit", "chat" -> List.of("enable", "disable");
                 case "kit" -> List.of("k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8", "k9");

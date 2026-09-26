@@ -104,7 +104,10 @@ public class DropManager {
     }
 
     private void clearChunkAbove(World world, Chunk chunk, int aboveY) {
-        int minHeight = Math.max(aboveY, world.getMinHeight());
+        // Start one block above the target Y so the floor at aboveY itself
+        // survives (critical for bedrock mode: Y=-64 is the world's actual
+        // bottom layer, so clearing it too would leave true void).
+        int minHeight = Math.max(aboveY + 1, world.getMinHeight() + 1);
         int maxHeight = world.getMaxHeight();
 
         for (int x = 0; x < 16; x++) {

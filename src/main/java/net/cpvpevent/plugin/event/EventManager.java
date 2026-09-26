@@ -37,7 +37,6 @@ public class EventManager {
     private int stageIndex = 0;
     private long secondsElapsedInRun = 0;
     private long countdownSecondsRemaining = 0;
-    private Material arenaMaterial;
 
     private BukkitTask tickTask;
     private BukkitTask countdownTask;
@@ -114,11 +113,66 @@ public class EventManager {
     }
 
     public void setArenaMaterial(Material material) {
-        this.arenaMaterial = material;
+        this.arenaMaterials = List.of(material);
     }
 
-    public Material arenaMaterial() {
-        return arenaMaterial;
+    public List<Material> arenaMaterials() {
+        return arenaMaterials;
+    }
+
+    /**
+     * Builds a flat square arena platform, centered on the world spawn, made
+     * from a random patchwork of the given materials (pass several for a
+     * mixed-biome look, or one for a uniform floor). Locks that spot in as
+     * the event border center and safe-spawn ground.
+     */
+    public void buildArena(List<Material> materials, int size, org.bukkit.command.CommandSender notify) {
+        World world = plugin.getServer().getWorlds().get(0);
+        Location center = world.getSpawnLocation();
+        int platformY = plugin.configManager().config().getInt("event.arena-platform-y", 100);
+
+        int half = size / 2;
+        int minX = center.getBlockX() - half;
+        int maxX = center.getBlockX() + half;
+        int minZ = center.getBlockZ() - half;
+        int maxZ = center.getBlockZ() + half;
+
+        List<Integer> xs = new ArrayList<>();
+        for (int x = minX; x <= maxX; x++) xs.add(x);
+
+        buildArenaColumns(world, xs, 0, minZ, maxZ, platformY, materials, () -> {
+            world.setSpawnLocation(center.getBlockX(), platformY + 1, center.getBlockZ());
+            world.getWorldBorder().setCenter(world.getSpawnLocation());
+            arenaMaterials = materials;
+            if (notify != null) {
+                notify.sendMessage(Text.color("&aArena built: " + size + "x" + size + " (" + materials.size() + " terrain type(s))."));
+            }
+        });
+    }
+
+    private List<Material> arenaMaterials;
+
+    private void buildArenaColumns(World world, List<Integer> xs, int index, int minZ, int maxZ, int platformY, List<Material> materials, Runnable onDone) {
+        int batch = 8; // columns per tick, keeps it smooth on large sizes
+        int end = Math.min(xs.size(), index + batch);
+        java.util.Random random = new java.util.Random();
+
+        for (int i = index; i < end; i++) {
+            int x = xs.get(i);
+            for (int z = minZ; z <= maxZ; z++) {
+                Material chosen = materials.get(random.nextInt(materials.size()));
+                world.getBlockAt(x, platformY, z).setType(chosen, false);
+                for (int y = platformY + 1; y <= platformY + 5; y++) {
+                    world.getBlockAt(x, y, z).setType(Material.AIR, false);
+                }
+            }
+        }
+
+        if (end < xs.size()) {
+            plugin.getServer().getScheduler().runTask(plugin, () -> buildArenaColumns(world, xs, end, minZ, maxZ, platformY, materials, onDone));
+        } else {
+            onDone.run();
+        }
     }
 
     public void stopEvent() {
@@ -226,10 +280,8 @@ public class EventManager {
     }
 
     private List<Material> allowedGroundMaterials() {
-        if (arenaMaterial != null) {
-            List<Material> single = new ArrayList<>();
-            single.add(arenaMaterial);
-            return single;
+        if (arenaMaterials != null && !arenaMaterials.isEmpty()) {
+            return arenaMaterials;
         }
         List<Material> allowed = new ArrayList<>();
         for (String name : plugin.configManager().config().getStringList("event.safe-spawn-blocks")) {

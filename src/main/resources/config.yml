@@ -13,6 +13,7 @@ event:
   default-border-size: 400
   final-border-size: 100
   arena-floor-material: "GRASS_BLOCK"
+  arena-platform-y: 100
   countdown-seconds: 10
   join-spectator-by-default: true
   safe-spawn-blocks:
