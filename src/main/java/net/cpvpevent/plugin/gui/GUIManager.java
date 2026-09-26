@@ -66,6 +66,21 @@ public class GUIManager implements Listener {
     }
 
     @EventHandler
+    public void onEventoolsInteract(org.bukkit.event.player.PlayerInteractEvent event) {
+        if (event.getItem() == null) return;
+        if (!event.getAction().isRightClick()) return;
+
+        String materialName = plugin.configManager().config().getString("eventools.material", "NETHER_STAR");
+        Material configured = Material.matchMaterial(materialName);
+        if (configured == null || event.getItem().getType() != configured) return;
+
+        if (!event.getPlayer().hasPermission("cpvpevent.eventsettings")) return;
+
+        event.setCancelled(true);
+        openSettingsGUI(event.getPlayer());
+    }
+
+    @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof EventSettingsHolder) {
             event.setCancelled(true);

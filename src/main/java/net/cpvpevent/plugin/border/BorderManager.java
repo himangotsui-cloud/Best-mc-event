@@ -66,8 +66,10 @@ public class BorderManager {
             border.setSize(Math.max(1, currentSize));
 
             if (plugin.configManager().config().getBoolean("border.action-bar-enabled", true)) {
+                boolean shrinking = targetSize < startSize;
+                String color = shrinking ? "&c" : "&a";
                 String format = plugin.configManager().config().getString("border.action-bar-format", "&bBorder: &f%size%");
-                String actionBar = Text.replace(format, "%size%", String.valueOf(Math.round(currentSize)));
+                String actionBar = Text.replace(color + format, "%size%", String.valueOf(Math.round(currentSize)));
                 for (Player player : plugin.getServer().getOnlinePlayers()) {
                     player.sendActionBar(actionBar);
                 }

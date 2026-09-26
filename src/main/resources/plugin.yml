@@ -8,6 +8,9 @@ softdepend: [ PlaceholderAPI ]
 folia-supported: false
 
 commands:
+  event:
+    description: Unified CPVPEventPlus command.
+    usage: /event <start|force|stop|pause|resume|status|arena|border|drop|pvp|kit|revive|party|...>
   startevent:
     description: Start a Crystal PvP event with a countdown.
     usage: /startevent <minutes> <mode> <announce>
@@ -43,8 +46,9 @@ commands:
     permission: cpvpevent.admin
   revive:
     description: Revive a dead player.
-    usage: /revive <player>
+    usage: /cpvprevive <player>
     permission: cpvpevent.revive
+    aliases: [cpvprevive]
   reviveall:
     description: Revive every dead player.
     permission: cpvpevent.admin
@@ -110,8 +114,9 @@ commands:
     permission: cpvpevent.admin
   party:
     description: Party management.
-    usage: /party <create|invite|accept|leave|kick>
+    usage: /cpvpparty <create|invite|accept|leave|kick>
     permission: cpvpevent.party
+    aliases: [cpvpparty]
   revfights:
     description: Start a RevFight between two dead players.
     usage: /revfights <player1> <player2>
@@ -127,12 +132,16 @@ commands:
     permission: cpvpevent.regen
   tpspawn:
     description: Teleport to the configured event spawn.
+    usage: /cpvptpspawn
     permission: cpvpevent.tpspawn
+    aliases: [cpvptpspawn]
   cpvpeventplusreload:
     description: Reload plugin configuration.
     permission: cpvpevent.admin
   help:
     description: Show CPVPEventPlus help.
+    usage: /cpvphelp
+    aliases: [cpvphelp]
 
 permissions:
   cpvpevent.*:

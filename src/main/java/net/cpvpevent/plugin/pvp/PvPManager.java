@@ -30,6 +30,11 @@ public class PvPManager {
         plugin.getServer().broadcastMessage(plugin.configManager().message(key));
     }
 
+    /** Sets state without broadcasting - used internally at event start. */
+    public void forceState(boolean enabled) {
+        this.pvpEnabled = enabled;
+    }
+
     public void setProtectionEnabled(boolean enabled) {
         this.protectionEnabled = enabled;
         String key = enabled ? "pvp.protection-enabled" : "pvp.protection-disabled";

@@ -10,7 +10,9 @@ spawn:
   pitch: 0
 
 event:
-  default-border-size: 500
+  default-border-size: 400
+  final-border-size: 100
+  arena-floor-material: "GRASS_BLOCK"
   countdown-seconds: 10
   join-spectator-by-default: true
   safe-spawn-blocks:

@@ -72,6 +72,7 @@ public class CommandRegistrar {
         register("eventools", guiCommands);
 
         register("regen", new RegenCommand(plugin));
+        register("event", new EventDispatchCommand(plugin));
     }
 
     private void register(String name, Object executor) {

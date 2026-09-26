@@ -43,6 +43,18 @@ public class ScoreboardManager {
     }
 
     private void updateAll() {
+        boolean eventActive = plugin.eventManager().state() != net.cpvpevent.plugin.event.EventState.IDLE;
+
+        if (!eventActive) {
+            // No event running: don't show our scoreboard to anyone.
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                if (player.getScoreboard() != plugin.getServer().getScoreboardManager().getMainScoreboard()) {
+                    player.setScoreboard(plugin.getServer().getScoreboardManager().getMainScoreboard());
+                }
+            }
+            return;
+        }
+
         String title = Text.color(plugin.configManager().scoreboard().getString("title", "&bEvent"));
         List<String> lines = plugin.configManager().scoreboard().getStringList("lines");
 

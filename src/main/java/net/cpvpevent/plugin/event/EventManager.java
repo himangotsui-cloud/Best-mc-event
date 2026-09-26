@@ -37,6 +37,7 @@ public class EventManager {
     private int stageIndex = 0;
     private long secondsElapsedInRun = 0;
     private long countdownSecondsRemaining = 0;
+    private Material arenaMaterial;
 
     private BukkitTask tickTask;
     private BukkitTask countdownTask;
@@ -94,13 +95,30 @@ public class EventManager {
         secondsElapsedInRun = 0;
         stages = loadStages();
 
+        resetBorderForStart();
         preparePlayersForEvent();
+        plugin.pvpManager().forceState(false);
 
         if (announceEnabled) {
             plugin.getServer().broadcastMessage(plugin.configManager().message("event.started"));
         }
 
         startTickTask();
+    }
+
+    private void resetBorderForStart() {
+        World world = plugin.getServer().getWorlds().get(0);
+        double size = plugin.configManager().config().getDouble("event.default-border-size", 400);
+        world.getWorldBorder().setSize(size);
+        world.getWorldBorder().setCenter(world.getSpawnLocation());
+    }
+
+    public void setArenaMaterial(Material material) {
+        this.arenaMaterial = material;
+    }
+
+    public Material arenaMaterial() {
+        return arenaMaterial;
     }
 
     public void stopEvent() {
@@ -202,38 +220,50 @@ public class EventManager {
     // ------------------------------------------------------------------
 
     private void preparePlayersForEvent() {
-        World world = plugin.getServer().getWorlds().get(0);
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            placePlayerInEvent(player);
+        }
+    }
+
+    private List<Material> allowedGroundMaterials() {
+        if (arenaMaterial != null) {
+            List<Material> single = new ArrayList<>();
+            single.add(arenaMaterial);
+            return single;
+        }
         List<Material> allowed = new ArrayList<>();
         for (String name : plugin.configManager().config().getStringList("event.safe-spawn-blocks")) {
             Material material = Material.matchMaterial(name);
             if (material != null) allowed.add(material);
         }
+        return allowed;
+    }
+
+    private void placePlayerInEvent(Player player) {
+        World world = plugin.getServer().getWorlds().get(0);
+        List<Material> allowed = allowedGroundMaterials();
 
         int radius = plugin.configManager().config().getInt("event.spawn-search-radius", 200);
         int clearance = plugin.configManager().config().getInt("event.min-clearance-blocks", 3);
         int attempts = plugin.configManager().config().getInt("event.spawn-search-attempts", 50);
         boolean spectatorJoin = plugin.configManager().config().getBoolean("event.join-spectator-by-default", true);
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Location safe = locationFinder.findSafeLocation(world, radius, allowed, clearance, attempts);
-            if (safe != null) {
-                player.teleport(safe);
-                playerStates.put(player.getUniqueId(), PlayerEventState.ALIVE);
-                player.setGameMode(GameMode.SURVIVAL);
-            } else if (spectatorJoin) {
-                playerStates.put(player.getUniqueId(), PlayerEventState.SPECTATOR);
-                player.setGameMode(GameMode.SPECTATOR);
-            }
+        Location safe = locationFinder.findSafeLocation(world, radius, allowed, clearance, attempts);
+        if (safe != null) {
+            player.teleport(safe);
+            playerStates.put(player.getUniqueId(), PlayerEventState.ALIVE);
+            player.setGameMode(GameMode.SURVIVAL);
+            player.getInventory().clear();
+            plugin.kitManager().giveDefaultKit(player);
+        } else if (spectatorJoin) {
+            playerStates.put(player.getUniqueId(), PlayerEventState.SPECTATOR);
+            player.setGameMode(GameMode.SPECTATOR);
         }
     }
 
     public void onPlayerJoinDuringEvent(Player player) {
         if (state == EventState.IDLE) return;
-        boolean spectatorJoin = plugin.configManager().config().getBoolean("event.join-spectator-by-default", true);
-        if (spectatorJoin) {
-            playerStates.put(player.getUniqueId(), PlayerEventState.SPECTATOR);
-            player.setGameMode(GameMode.SPECTATOR);
-        }
+        placePlayerInEvent(player);
     }
 
     public void markDead(Player player) {
@@ -276,8 +306,7 @@ public class EventManager {
         cancelTasks();
         plugin.borderManager().stopBorder();
 
-        plugin.getServer().broadcastMessage(
-                plugin.configManager().message("event.winner").replace("%player%", winnerName));
+        broadcastWinnerTitle(winnerName);
 
         state = EventState.IDLE;
         playerStates.clear();
@@ -289,8 +318,14 @@ public class EventManager {
             plugin.getServer().broadcastMessage(plugin.configManager().message("event.no-winner-stored"));
             return;
         }
-        plugin.getServer().broadcastMessage(
-                plugin.configManager().message("event.winner").replace("%player%", winner));
+        broadcastWinnerTitle(winner);
+    }
+
+    private void broadcastWinnerTitle(String winnerName) {
+        String titleText = plugin.configManager().rawMessage("event.winner").replace("%player%", winnerName);
+        for (Player online : plugin.getServer().getOnlinePlayers()) {
+            online.sendTitle(Text.color(titleText), Text.color("&7Event over"), 10, 70, 20);
+        }
     }
 
     // ------------------------------------------------------------------

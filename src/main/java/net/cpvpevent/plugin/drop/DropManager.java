@@ -63,7 +63,21 @@ public class DropManager {
         World world = plugin.getServer().getWorlds().get(0);
         int batchSize = plugin.configManager().config().getInt("drop.chunk-batch-size", 4);
 
-        List<Chunk> chunks = new ArrayList<>(List.of(world.getLoadedChunks()));
+        org.bukkit.WorldBorder border = world.getWorldBorder();
+        org.bukkit.Location center = border.getCenter();
+        double half = border.getSize() / 2.0;
+        int minChunkX = (int) Math.floor((center.getX() - half) / 16.0);
+        int maxChunkX = (int) Math.floor((center.getX() + half) / 16.0);
+        int minChunkZ = (int) Math.floor((center.getZ() - half) / 16.0);
+        int maxChunkZ = (int) Math.floor((center.getZ() + half) / 16.0);
+
+        List<Chunk> chunks = new ArrayList<>();
+        for (Chunk chunk : world.getLoadedChunks()) {
+            if (chunk.getX() >= minChunkX && chunk.getX() <= maxChunkX
+                    && chunk.getZ() >= minChunkZ && chunk.getZ() <= maxChunkZ) {
+                chunks.add(chunk);
+            }
+        }
 
         processChunkBatch(world, chunks, 0, batchSize, aboveY);
     }
