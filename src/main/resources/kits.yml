@@ -1,0 +1,31 @@
+# Each kit defines armor, main inventory, offhand.
+# item format: MATERIAL,amount[,enchant:level;enchant:level][,name:Display Name]
+k1:
+  armor:
+    helmet: "DIAMOND_HELMET,1"
+    chestplate: "DIAMOND_CHESTPLATE,1"
+    leggings: "DIAMOND_LEGGINGS,1"
+    boots: "DIAMOND_BOOTS,1"
+  offhand: "TOTEM_OF_UNDYING,1"
+  inventory:
+    0: "DIAMOND_SWORD,1,sharpness:2"
+    1: "END_CRYSTAL,4"
+    2: "OBSIDIAN,16"
+    3: "GOLDEN_APPLE,4"
+    4: "TOTEM_OF_UNDYING,2"
+    5: "ENDER_PEARL,8"
+
+k2:
+  armor:
+    helmet: "DIAMOND_HELMET,1,protection:2"
+    chestplate: "DIAMOND_CHESTPLATE,1,protection:2"
+    leggings: "DIAMOND_LEGGINGS,1,protection:2"
+    boots: "DIAMOND_BOOTS,1,protection:2"
+  offhand: "TOTEM_OF_UNDYING,1"
+  inventory:
+    0: "DIAMOND_SWORD,1,sharpness:1,knockback:1"
+    1: "END_CRYSTAL,6"
+    2: "OBSIDIAN,20"
+    3: "GOLDEN_APPLE,6"
+
+# k3-k9 can be added by server administrators following the same format.

@@ -1,0 +1,140 @@
+storage:
+  data-folder: "data"
+
+spawn:
+  world: "world"
+  x: 0
+  y: 100
+  z: 0
+  yaw: 0
+  pitch: 0
+
+event:
+  default-border-size: 500
+  countdown-seconds: 10
+  join-spectator-by-default: true
+  safe-spawn-blocks:
+    - GRASS_BLOCK
+    - DIRT
+    - SAND
+    - SNOW_BLOCK
+    - MYCELIUM
+    - COARSE_DIRT
+    - PODZOL
+    - RED_SAND
+  min-clearance-blocks: 3
+  spawn-search-attempts: 60
+  spawn-search-radius: 240
+  automatic:
+    stages:
+      - type: ANNOUNCE
+        message: "&aEvent starting! Grab your gear."
+        delay-seconds: 0
+      - type: BORDER
+        distance: 300
+        time-seconds: 300
+        delay-seconds: 30
+      - type: DROP
+        mode: DEEPSLATE
+        delay-seconds: 400
+      - type: BORDER
+        distance: 50
+        time-seconds: 180
+        delay-seconds: 420
+      - type: DROP
+        mode: BEDROCK
+        delay-seconds: 700
+
+border:
+  action-bar-enabled: true
+  action-bar-format: "&bBorder: &f%size% blocks"
+  damage:
+    base-damage: 1.0
+    max-damage: 8.0
+    damage-per-distance: 0.5
+    interval-ticks: 20
+  storm-sickness:
+    enabled: true
+    delay-seconds: 30
+
+drop:
+  blindness-enabled: true
+  blindness-duration-seconds: 5
+  protection-duration-seconds: 6
+  chunk-batch-size: 4
+  announce-title: "&c&lDROP INCOMING"
+  announce-subtitle: "&7Brace yourself"
+
+pvp:
+  fall-damage-enabled: true
+  protection:
+    block-break-disabled: true
+    block-place-disabled: true
+    interact-restricted: true
+  countdown:
+    enabled: true
+    seconds: 3
+    sound: ENTITY_EXPERIENCE_ORB_PICKUP
+    go-sound: ENTITY_ENDER_DRAGON_GROWL
+
+rekit:
+  enabled: true
+  deaths-required: 5
+  active-duration-seconds: 20
+
+revive:
+  enabled: true
+  non-op-revive-enabled: true
+  kills-required: 5
+  protection-seconds: 5
+  give-rekit-on-revive: true
+  allow-self-revive: false
+  give-kit-if-empty: "k1"
+
+revfights:
+  arena-folder: "RevFights-Worlds"
+  border-size: 50
+  match-time-seconds: 180
+
+party:
+  max-size: 8
+  glow-enabled: true
+
+chat:
+  enabled: true
+  prefixes:
+    global: "&7[&fGlobal&7] "
+    staff: "&c[STAFF] "
+    party: "&a[PARTY] "
+
+daily-events:
+  enabled: false
+  timezone: "UTC"
+  announce-delay-seconds: 300
+  schedule:
+    - time: "20:00"
+      mode: AUTOMATIC
+      announce: true
+
+clear-block:
+  blocks:
+    - OBSIDIAN
+    - CRYING_OBSIDIAN
+    - RESPAWN_ANCHOR
+
+netherite-bedrock:
+  worlds:
+    - world
+  bedrock-block: BEDROCK
+  netherite-block: NETHERITE_BLOCK
+
+eventools:
+  material: NETHER_STAR
+  name: "&d&lEvent Tools"
+  lore:
+    - "&7Right click to open"
+    - "&7the event settings GUI."
+
+sounds:
+  gui-click: UI_BUTTON_CLICK
+  winner: UI_TOAST_CHALLENGE_COMPLETE

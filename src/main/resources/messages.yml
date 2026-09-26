@@ -1,0 +1,91 @@
+prefix: "&8[&bCPVP&8] &r"
+
+general:
+  no-permission: "&cYou do not have permission to do that."
+  player-only: "&cThis command can only be used by a player."
+  player-not-found: "&cPlayer not found: &f%player%"
+  invalid-usage: "&cUsage: &f%usage%"
+  reloaded: "&aConfiguration reloaded."
+  invalid-number: "&cThat is not a valid number."
+
+event:
+  starting-countdown: "&aEvent starts in &f%seconds% &aseconds!"
+  started: "&a&lEVENT STARTED"
+  force-started: "&a&lEVENT FORCE STARTED"
+  stopped: "&c&lEVENT STOPPED"
+  paused: "&e&lEVENT PAUSED"
+  resumed: "&a&lEVENT RESUMED"
+  already-running: "&cAn event is already running."
+  none-running: "&cThere is no active event."
+  status-header: "&b&lEvent Status"
+  status-line: "&7State: &f%state% &7| Mode: &f%mode% &7| Stage: &f%stage%"
+  winner: "&6&l%player% &ehas won the event!"
+  no-winner-stored: "&cThere is no stored winner."
+
+border:
+  shrinking: "&bBorder shrinking to &f%size% &bover &f%time%s"
+  stopped: "&cBorder animation stopped."
+  resumed: "&aBorder animation resumed."
+  storm-warning: "&c&lYou are outside the border!"
+  storm-death: "&4You died to the storm."
+
+drop:
+  incoming: "&c&lDrop incoming in %seconds%s!"
+  triggered: "&c&lThe floor is falling!"
+
+pvp:
+  enabled: "&aPvP has been enabled."
+  disabled: "&cPvP has been disabled."
+  countdown-go: "&a&lGO!"
+  protection-enabled: "&aProtection mode enabled."
+  protection-disabled: "&cProtection mode disabled."
+  action-blocked: "&cThis action is disabled right now."
+
+rekit:
+  enabled: "&aRekit system enabled."
+  disabled: "&cRekit system disabled."
+  available: "&aYour rekit is now available! Use it within %seconds%s."
+  used: "&aYou have been re-kitted."
+  status: "&7Rekit: &f%deaths%/%required% deaths"
+
+revive:
+  disabled-system: "&cThe revive system is currently disabled."
+  self-revive-disabled: "&cYou cannot revive yourself."
+  not-enough-kills: "&cYou need %kills%/%required% kills to revive."
+  revived-target: "&aYou have been revived by &f%reviver%&a."
+  revived-by-you: "&aYou revived &f%player%&a."
+  all-revived: "&aAll dead players have been revived."
+  progress: "&7Revive progress: &f%kills%/%required% kills"
+
+party:
+  created: "&aParty created."
+  already-in-party: "&cYou are already in a party."
+  invited: "&aYou invited &f%player% &ato your party."
+  invite-received: "&f%player% &ainvited you to their party! Use /party accept."
+  invite-not-found: "&cYou have no pending party invite."
+  joined: "&aYou joined &f%player%&a's party."
+  left: "&eYou left the party."
+  kicked: "&e%player% was kicked from the party."
+  not-in-party: "&cYou are not in a party."
+  not-leader: "&cOnly the party leader can do that."
+  full: "&cThat party is full."
+  disbanded: "&eThe party has been disbanded."
+
+chat:
+  enabled: "&aGlobal chat enabled."
+  disabled: "&cGlobal chat disabled."
+  staffchat-on: "&aStaff chat enabled."
+  staffchat-off: "&cStaff chat disabled."
+
+regen:
+  started: "&eRegenerating %count% world(s)..."
+  world-done: "&a✔ %world% regenerated."
+  world-failed: "&c✘ %world% failed to regenerate: %error%"
+  complete: "&aRegeneration complete."
+  locked: "&cWorlds are currently regenerating, try again shortly."
+
+revfights:
+  starting: "&e%player1% &7vs &e%player2% &7- RevFight starting!"
+  no-arena: "&cNo RevFights arena is currently available."
+  winner: "&a%winner% &7won the RevFight against &c%loser%&7."
+  timeout: "&eThe RevFight timed out with no winner."

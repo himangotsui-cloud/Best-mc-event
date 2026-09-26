@@ -1,0 +1,4 @@
+# Runtime-persisted event data (last winner, daily-event tracking, etc).
+# Managed automatically by the plugin. Safe to delete when no event is running.
+last-winner: ""
+last-daily-run-date: ""

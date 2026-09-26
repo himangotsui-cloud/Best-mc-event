@@ -1,0 +1,172 @@
+name: CPVPEventPlus
+version: '${project.version}'
+main: net.cpvpevent.plugin.CPVPEventPlus
+api-version: '1.20'
+authors: [ CPVPEventPlus ]
+description: Production-grade Crystal PvP Event management plugin.
+softdepend: [ PlaceholderAPI ]
+folia-supported: false
+
+commands:
+  startevent:
+    description: Start a Crystal PvP event with a countdown.
+    usage: /startevent <minutes> <mode> <announce>
+    permission: cpvpevent.admin
+  startforce:
+    description: Force-start an event immediately.
+    permission: cpvpevent.admin
+  stopevent:
+    description: Stop the current event.
+    permission: cpvpevent.admin
+  pauseevent:
+    description: Pause the current event sequence.
+    permission: cpvpevent.admin
+  resumeevent:
+    description: Resume a paused event sequence.
+    permission: cpvpevent.admin
+  eventstatus:
+    description: Show the current event status.
+    permission: cpvpevent.admin
+  border:
+    description: Shrink the world border.
+    usage: /border <distance> <time>
+    permission: cpvpevent.admin
+  stopborder:
+    description: Stop the current border animation.
+    permission: cpvpevent.admin
+  resumeborder:
+    description: Resume a paused border animation.
+    permission: cpvpevent.admin
+  drop:
+    description: Trigger a deepslate or bedrock drop.
+    usage: /drop <deepslate|bedrock>
+    permission: cpvpevent.admin
+  revive:
+    description: Revive a dead player.
+    usage: /revive <player>
+    permission: cpvpevent.revive
+  reviveall:
+    description: Revive every dead player.
+    permission: cpvpevent.admin
+  rekit:
+    description: Toggle the global rekit system.
+    usage: /rekit <enable|disable>
+    permission: cpvpevent.admin
+  rekitset:
+    description: Configure rekit death threshold.
+    usage: /rekitset <deaths|disable>
+    permission: cpvpevent.admin
+  rekitstatus:
+    description: Show rekit status.
+    permission: cpvpevent.admin
+  kitall:
+    description: Give a kit to all participants.
+    usage: /kitall <k1-k9>
+    permission: cpvpevent.admin
+  pvp:
+    description: Toggle global PvP.
+    usage: /pvp <enable|disable>
+    permission: cpvpevent.admin
+  protection:
+    description: Toggle protection mode.
+    usage: /protection <enable|disable>
+    permission: cpvpevent.admin
+  chat:
+    description: Toggle global chat.
+    usage: /chat <enable|disable>
+    permission: cpvpevent.admin
+  announce:
+    description: Broadcast a message.
+    usage: /announce <message>
+    permission: cpvpevent.admin
+  announcewinner:
+    description: Announce the stored winner.
+    permission: cpvpevent.admin
+  joinspectator:
+    description: Toggle auto-spectator for joining players.
+    usage: /joinspectator <true|false>
+    permission: cpvpevent.admin
+  clearblock:
+    description: Remove configured PvP blocks.
+    permission: cpvpevent.admin
+  clearspawn:
+    description: Clear the event spawn area.
+    permission: cpvpevent.admin
+  setnetherite:
+    description: Convert configured bedrock to netherite.
+    permission: cpvpevent.admin
+  setbedrock:
+    description: Convert configured netherite to bedrock.
+    permission: cpvpevent.admin
+  staffchat:
+    description: Toggle staff chat.
+    usage: /staffchat <true|false>
+    permission: cpvpevent.staffchat
+  revivedisable:
+    description: Disable the revive system.
+    permission: cpvpevent.admin
+  reviveenable:
+    description: Enable the revive system.
+    permission: cpvpevent.admin
+  party:
+    description: Party management.
+    usage: /party <create|invite|accept|leave|kick>
+    permission: cpvpevent.party
+  revfights:
+    description: Start a RevFight between two dead players.
+    usage: /revfights <player1> <player2>
+    permission: cpvpevent.admin
+  eventsettings:
+    description: Open the event settings GUI.
+    permission: cpvpevent.eventsettings
+  eventools:
+    description: Get the event settings tool item.
+    permission: cpvpevent.eventsettings
+  regen:
+    description: Regenerate configured worlds from templates.
+    permission: cpvpevent.regen
+  tpspawn:
+    description: Teleport to the configured event spawn.
+    permission: cpvpevent.tpspawn
+  cpvpeventplusreload:
+    description: Reload plugin configuration.
+    permission: cpvpevent.admin
+  help:
+    description: Show CPVPEventPlus help.
+
+permissions:
+  cpvpevent.*:
+    description: Grants all CPVPEventPlus permissions.
+    children:
+      cpvpevent.admin: true
+      cpvpevent.revive: true
+      cpvpevent.staffchat: true
+      cpvpevent.eventsettings: true
+      cpvpevent.party: true
+      cpvpevent.party.admin: true
+      cpvpevent.regen: true
+      cpvpevent.tpspawn: true
+  cpvpevent.admin:
+    description: Full administrative access.
+    default: op
+  cpvpevent.revive:
+    description: Allows using /revive as a non-op when enabled in config.
+    default: true
+  cpvpevent.staffchat:
+    description: Allows using staff chat.
+    default: op
+  cpvpevent.eventsettings:
+    description: Allows opening the event settings GUI.
+    default: op
+  cpvpevent.party:
+    description: Allows using the party system.
+    default: true
+  cpvpevent.party.admin:
+    description: Allows disbanding/resetting parties.
+    default: op
+  cpvpevent.regen:
+    description: Allows running /regen.
+    default: op
+  cpvpevent.tpspawn:
+    description: Allows /tpspawn.
+    default: true

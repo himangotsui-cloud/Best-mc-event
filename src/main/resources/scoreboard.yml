@@ -1,0 +1,14 @@
+enabled: true
+update-interval-ticks: 20
+title: "&b&lCRYSTAL PVP"
+lines:
+  - ""
+  - "&7Alive: &f%cpvp_players_alive%"
+  - "&7Border: &f%cpvp_border%"
+  - "&7Rekit: &f%cpvp_rekit_deaths%"
+  - "&7Totems: &f%cpvp_totems%"
+  - "&7Ping: &f%cpvp_ping%"
+  - ""
+  - "&7Team: &f%cpvp_team%"
+  - ""
+  - "&bplay.example.net"
