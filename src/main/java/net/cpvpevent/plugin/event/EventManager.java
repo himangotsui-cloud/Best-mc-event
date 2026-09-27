@@ -60,11 +60,7 @@ public class EventManager {
         this.state = EventState.COUNTDOWN;
         this.countdownSecondsRemaining = Math.max(0, minutes) * 60L;
 
-        if (announce) {
-            plugin.getServer().broadcastMessage(
-                    Text.color(plugin.configManager().message("event.starting-countdown")
-                            .replace("%seconds%", String.valueOf(countdownSecondsRemaining))));
-        }
+        if (announce) sendCountdownTitle(countdownSecondsRemaining);
 
         countdownTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if (countdownSecondsRemaining <= 0) {
@@ -72,8 +68,29 @@ public class EventManager {
                 beginRun();
                 return;
             }
+            if (announceEnabled) sendCountdownTitle(countdownSecondsRemaining);
             countdownSecondsRemaining--;
         }, 20L, 20L);
+    }
+
+    private void sendCountdownTitle(long secondsRemaining) {
+        String time = formatTime(secondsRemaining);
+        String title = Text.color("&e&l⏱ &fStarting In &e" + time);
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            p.sendTitle(title, "", 0, 25, 0);
+        }
+    }
+
+    private String formatTime(long totalSeconds) {
+        long m = totalSeconds / 60;
+        long s = totalSeconds % 60;
+        return m + ":" + String.format("%02d", s);
+    }
+
+    private void broadcastLifecycleTitle(String title, String subtitle) {
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            p.sendTitle(Text.color(title), Text.color(subtitle), 10, 60, 20);
+        }
     }
 
     public void startForce(EventMode requestedMode, boolean announce) {
@@ -82,9 +99,6 @@ public class EventManager {
         }
         this.mode = requestedMode;
         this.announceEnabled = announce;
-        if (announce) {
-            plugin.getServer().broadcastMessage(plugin.configManager().message("event.force-started"));
-        }
         beginRun();
     }
 
@@ -99,7 +113,7 @@ public class EventManager {
         plugin.pvpManager().forceState(false);
 
         if (announceEnabled) {
-            plugin.getServer().broadcastMessage(plugin.configManager().message("event.started"));
+            broadcastLifecycleTitle("&6&lEVENT", "&fEvent started!");
         }
 
         startTickTask();
@@ -181,21 +195,21 @@ public class EventManager {
         state = EventState.IDLE;
         playerStates.clear();
         plugin.borderManager().stopBorder();
-        plugin.getServer().broadcastMessage(plugin.configManager().message("event.stopped"));
+        broadcastLifecycleTitle("&c&lEVENT", "&fEvent stopped.");
     }
 
     public void pauseEvent() {
         if (state != EventState.RUNNING) return;
         state = EventState.PAUSED;
         plugin.borderManager().pauseBorder();
-        plugin.getServer().broadcastMessage(plugin.configManager().message("event.paused"));
+        broadcastLifecycleTitle("&e&lEVENT", "&fEvent paused.");
     }
 
     public void resumeEvent() {
         if (state != EventState.PAUSED) return;
         state = EventState.RUNNING;
         plugin.borderManager().resumeBorder();
-        plugin.getServer().broadcastMessage(plugin.configManager().message("event.resumed"));
+        broadcastLifecycleTitle("&a&lEVENT", "&fEvent resumed.");
     }
 
     public void shutdown() {

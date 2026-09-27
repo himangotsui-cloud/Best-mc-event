@@ -1,14 +1,14 @@
 enabled: true
 update-interval-ticks: 20
-title: "&b&lCRYSTAL PVP"
+title: "&b&lEVENTS"
 lines:
   - ""
-  - "&7Alive: &f%cpvp_players_alive%"
-  - "&7Border: &f%cpvp_border%"
-  - "&7Rekit: &f%cpvp_rekit_deaths%"
-  - "&7Totems: &f%cpvp_totems%"
-  - "&7Ping: &f%cpvp_ping%"
+  - "&fBorder: &b%cpvp_border%m"
+  - "&fAlive: &a%cpvp_players_alive%"
+  - "&fTotems: &d%cpvp_totems%"
+  - "&fRekit in: &e%cpvp_rekit%"
+  - "&fPing: &7%cpvp_ping%ms"
   - ""
-  - "&7Team: &f%cpvp_team%"
+  - "&fTeam: &f%cpvp_team%"
   - ""
   - "&bplay.example.net"
