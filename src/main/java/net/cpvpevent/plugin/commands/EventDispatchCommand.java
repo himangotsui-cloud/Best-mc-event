@@ -191,12 +191,7 @@ public class EventDispatchCommand implements CommandExecutor, TabCompleter {
                 if (!(sender instanceof Player player) || !player.hasPermission("cpvpevent.eventsettings")) {
                     sender.sendMessage(plugin.configManager().message("general.no-permission")); return true;
                 }
-                Material material = Material.matchMaterial(plugin.configManager().config().getString("eventools.material", "NETHER_STAR"));
-                if (material == null) material = Material.NETHER_STAR;
-                player.getInventory().addItem(new net.cpvpevent.plugin.util.ItemBuilder(material)
-                        .name(plugin.configManager().config().getString("eventools.name", "&d&lEvent Tools"))
-                        .lore(plugin.configManager().config().getStringList("eventools.lore"))
-                        .build());
+                plugin.guiManager().giveEventTools(player);
             }
             case "regen" -> {
                 if (!sender.hasPermission("cpvpevent.regen")) { sender.sendMessage(plugin.configManager().message("general.no-permission")); return true; }

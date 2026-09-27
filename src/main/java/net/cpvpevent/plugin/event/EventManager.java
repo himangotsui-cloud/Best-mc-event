@@ -111,6 +111,7 @@ public class EventManager {
         resetBorderForStart();
         preparePlayersForEvent();
         plugin.pvpManager().forceState(false);
+        giveStaffEventTools();
 
         if (announceEnabled) {
             broadcastLifecycleTitle("&6&lEVENT", "&fEvent started!");
@@ -121,9 +122,15 @@ public class EventManager {
 
     private void resetBorderForStart() {
         World world = plugin.getServer().getWorlds().get(0);
-        double size = plugin.configManager().config().getDouble("event.default-border-size", 400);
-        world.getWorldBorder().setSize(size);
-        world.getWorldBorder().setCenter(world.getSpawnLocation());
+        if (arenaSize > 0) {
+            // An arena was built - the border must exactly match its footprint.
+            world.getWorldBorder().setSize(arenaSize);
+            world.getWorldBorder().setCenter(arenaCenterX, arenaCenterZ);
+        } else {
+            double size = plugin.configManager().config().getDouble("event.default-border-size", 400);
+            world.getWorldBorder().setSize(size);
+            world.getWorldBorder().setCenter(world.getSpawnLocation());
+        }
     }
 
     public void setArenaMaterial(Material material) {
@@ -134,11 +141,17 @@ public class EventManager {
         return arenaMaterials;
     }
 
+    private List<Material> arenaMaterials;
+    private int arenaMinX, arenaMaxX, arenaMinZ, arenaMaxZ, arenaPlatformY, arenaSize;
+    private double arenaCenterX, arenaCenterZ;
+
     /**
      * Builds a flat square arena platform, centered on the world spawn, made
      * from a random patchwork of the given materials (pass several for a
-     * mixed-biome look, or one for a uniform floor). Locks that spot in as
-     * the event border center and safe-spawn ground.
+     * mixed-biome look, or one for a uniform floor). The platform is several
+     * blocks thick (not a single paper-thin layer) and the world border is
+     * locked to exactly match its footprint so there's no dead space beyond
+     * the playable floor.
      */
     public void buildArena(List<Material> materials, int size, org.bukkit.command.CommandSender notify) {
         World world = plugin.getServer().getWorlds().get(0);
@@ -156,26 +169,39 @@ public class EventManager {
 
         buildArenaColumns(world, xs, 0, minZ, maxZ, platformY, materials, () -> {
             world.setSpawnLocation(center.getBlockX(), platformY + 1, center.getBlockZ());
-            world.getWorldBorder().setCenter(world.getSpawnLocation());
+
             arenaMaterials = materials;
+            arenaMinX = minX;
+            arenaMaxX = maxX;
+            arenaMinZ = minZ;
+            arenaMaxZ = maxZ;
+            arenaPlatformY = platformY;
+            arenaSize = size;
+            arenaCenterX = center.getBlockX() + 0.5;
+            arenaCenterZ = center.getBlockZ() + 0.5;
+
+            world.getWorldBorder().setSize(size);
+            world.getWorldBorder().setCenter(arenaCenterX, arenaCenterZ);
+
             if (notify != null) {
                 notify.sendMessage(Text.color("&aArena built: " + size + "x" + size + " (" + materials.size() + " terrain type(s))."));
             }
         });
     }
 
-    private List<Material> arenaMaterials;
-
     private void buildArenaColumns(World world, List<Integer> xs, int index, int minZ, int maxZ, int platformY, List<Material> materials, Runnable onDone) {
         int batch = 8; // columns per tick, keeps it smooth on large sizes
         int end = Math.min(xs.size(), index + batch);
+        int platformThickness = 5; // solid ground, not a paper-thin single layer
         java.util.Random random = new java.util.Random();
 
         for (int i = index; i < end; i++) {
             int x = xs.get(i);
             for (int z = minZ; z <= maxZ; z++) {
                 Material chosen = materials.get(random.nextInt(materials.size()));
-                world.getBlockAt(x, platformY, z).setType(chosen, false);
+                for (int y = platformY - platformThickness; y <= platformY; y++) {
+                    world.getBlockAt(x, y, z).setType(chosen, false);
+                }
                 for (int y = platformY + 1; y <= platformY + 5; y++) {
                     world.getBlockAt(x, y, z).setType(Material.AIR, false);
                 }
@@ -307,12 +333,34 @@ public class EventManager {
 
     private void placePlayerInEvent(Player player) {
         World world = plugin.getServer().getWorlds().get(0);
-        List<Material> allowed = allowedGroundMaterials();
+        boolean spectatorJoin = plugin.configManager().config().getBoolean("event.join-spectator-by-default", true);
 
+        if (arenaSize > 0) {
+            // Built arena: drop the player in from above so they parachute
+            // down onto the platform instead of just appearing on the ground.
+            int margin = 6;
+            int x = arenaMinX + margin + (int) (Math.random() * Math.max(1, (arenaMaxX - margin) - (arenaMinX + margin)));
+            int z = arenaMinZ + margin + (int) (Math.random() * Math.max(1, (arenaMaxZ - margin) - (arenaMinZ + margin)));
+            int dropHeight = plugin.configManager().config().getInt("event.drop-spawn-height", 30);
+
+            Location dropLoc = new Location(world, x + 0.5, arenaPlatformY + dropHeight, z + 0.5);
+            player.teleport(dropLoc);
+            player.setGameMode(GameMode.SURVIVAL);
+            player.getInventory().clear();
+            plugin.kitManager().giveDefaultKit(player);
+
+            int fallSeconds = plugin.configManager().config().getInt("event.drop-slowfall-seconds", 12);
+            player.addPotionEffect(new org.bukkit.potion.PotionEffect(
+                    org.bukkit.potion.PotionEffectType.SLOW_FALLING, fallSeconds * 20, 1, false, false));
+
+            playerStates.put(player.getUniqueId(), PlayerEventState.ALIVE);
+            return;
+        }
+
+        List<Material> allowed = allowedGroundMaterials();
         int radius = plugin.configManager().config().getInt("event.spawn-search-radius", 200);
         int clearance = plugin.configManager().config().getInt("event.min-clearance-blocks", 3);
         int attempts = plugin.configManager().config().getInt("event.spawn-search-attempts", 50);
-        boolean spectatorJoin = plugin.configManager().config().getBoolean("event.join-spectator-by-default", true);
 
         Location safe = locationFinder.findSafeLocation(world, radius, allowed, clearance, attempts);
         if (safe != null) {
@@ -324,6 +372,14 @@ public class EventManager {
         } else if (spectatorJoin) {
             playerStates.put(player.getUniqueId(), PlayerEventState.SPECTATOR);
             player.setGameMode(GameMode.SPECTATOR);
+        }
+    }
+
+    private void giveStaffEventTools() {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (player.hasPermission("cpvpevent.eventsettings")) {
+                plugin.guiManager().giveEventTools(player);
+            }
         }
     }
 

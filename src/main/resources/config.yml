@@ -14,6 +14,8 @@ event:
   final-border-size: 100
   arena-floor-material: "GRASS_BLOCK"
   arena-platform-y: 100
+  drop-spawn-height: 30
+  drop-slowfall-seconds: 12
   countdown-seconds: 10
   join-spectator-by-default: true
   safe-spawn-blocks:

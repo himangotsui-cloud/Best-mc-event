@@ -36,12 +36,7 @@ public class GUICommands implements CommandExecutor, TabCompleter {
         if (label.equalsIgnoreCase("eventsettings")) {
             plugin.guiManager().openSettingsGUI(player);
         } else if (label.equalsIgnoreCase("eventools")) {
-            Material material = Material.matchMaterial(plugin.configManager().config().getString("eventools.material", "NETHER_STAR"));
-            if (material == null) material = Material.NETHER_STAR;
-            String name = plugin.configManager().config().getString("eventools.name", "&d&lEvent Tools");
-            List<String> lore = plugin.configManager().config().getStringList("eventools.lore");
-            ItemStack item = new ItemBuilder(material).name(name).lore(lore).build();
-            player.getInventory().addItem(item);
+            plugin.guiManager().giveEventTools(player);
         }
         return true;
     }

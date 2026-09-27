@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,76 @@ public class GUIManager implements Listener {
     // ------------------------------------------------------------------
     // Event settings main GUI
     // ------------------------------------------------------------------
+
+    // ------------------------------------------------------------------
+    // Staff tool items: settings star + help book
+    // ------------------------------------------------------------------
+
+    public void giveEventTools(Player player) {
+        Material starMaterial = Material.matchMaterial(plugin.configManager().config().getString("eventools.material", "NETHER_STAR"));
+        if (starMaterial == null) starMaterial = Material.NETHER_STAR;
+
+        ItemStack star = new ItemBuilder(starMaterial)
+                .name(plugin.configManager().config().getString("eventools.name", "&d&lEvent Tools"))
+                .lore(plugin.configManager().config().getStringList("eventools.lore"))
+                .build();
+
+        if (!player.getInventory().contains(starMaterial)) {
+            player.getInventory().addItem(star);
+        }
+
+        ItemStack book = buildHelpBook();
+        if (!player.getInventory().contains(Material.WRITTEN_BOOK)) {
+            player.getInventory().addItem(book);
+        }
+    }
+
+    private ItemStack buildHelpBook() {
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        org.bukkit.inventory.meta.BookMeta meta = (org.bukkit.inventory.meta.BookMeta) book.getItemMeta();
+        meta.setTitle(Text.color("&6CPVPEventPlus Help"));
+        meta.setAuthor("Server");
+
+        String[][] commands = {
+                {"/event start <min> <mode> <announce>", "Start event countdown."},
+                {"/event force <mode> <announce>", "Force start immediately."},
+                {"/event stop", "Stop the current event."},
+                {"/event pause / resume", "Pause or resume the event."},
+                {"/event status", "Show current event state."},
+                {"/event arena <mat[,mat2]|random> [size]", "Build the arena platform."},
+                {"/event border <distance> <time>", "Shrink the border."},
+                {"/event drop <deepslate|bedrock>", "Trigger a floor drop."},
+                {"/event pvp <enable|disable>", "Toggle PvP with countdown."},
+                {"/event protection <enable|disable>", "Toggle build protection."},
+                {"/event kit <k1-k9>", "Give a kit to everyone."},
+                {"/event revive <player>", "Revive a player."},
+                {"/event reviveall", "Revive everyone."},
+                {"/event party <sub>", "Party management."},
+                {"/event revfights <p1> <p2>", "Start a 1v1 revival fight."},
+                {"/event settings", "Open the settings GUI."},
+                {"/event regen [world]", "Regenerate a world from template."},
+                {"/event announcewinner", "Announce the stored winner."},
+        };
+
+        List<String> pages = new ArrayList<>();
+        StringBuilder page = new StringBuilder();
+        int perPage = 0;
+        for (String[] cmd : commands) {
+            String entry = Text.color("&c" + cmd[0] + "\n&8" + cmd[1] + "\n\n");
+            page.append(entry);
+            perPage++;
+            if (perPage >= 4) {
+                pages.add(page.toString());
+                page = new StringBuilder();
+                perPage = 0;
+            }
+        }
+        if (page.length() > 0) pages.add(page.toString());
+        meta.setPages(pages);
+
+        book.setItemMeta(meta);
+        return book;
+    }
 
     public void openSettingsGUI(Player player) {
         EventSettingsHolder holder = new EventSettingsHolder();
